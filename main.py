@@ -5,34 +5,44 @@
 # 4. Update birthdays.csv to contain today's month and day.
 # See the solution video in the 100 Days of Python Course for explainations.
 
-
-from datetime import datetime
-import pandas
-import random
-import smtplib
 import os
+import smtplib
+import random
+import datetime as dt
+import pandas as pd
+birthday_today = False
 
-# import os and use it to get the Github repository secrets
+NAME_PLACEHOLDER = "[NAME]"
+AGE_PLACEHOLDER = "[AGE]"
+
+# getting current day details
+now = dt.datetime.now()
+present_year = now.year
+present_day = now.day
+present_month = now.month
+# getting the birthday details
+birthdays = pd.read_csv("birthdays.csv")
+
+birthdays_dict = birthdays.to_dict(orient="records")
+for people_details in birthdays_dict:
+    if people_details["month"] == present_month and people_details["day"] == present_day:
+        birthday_person_details = people_details
+        birthday_today = True
+
 MY_EMAIL = os.environ.get("MY_EMAIL")
 MY_PASSWORD = os.environ.get("MY_PASSWORD")
 
-today = datetime.now()
-today_tuple = (today.month, today.day)
-
-data = pandas.read_csv("birthdays.csv")
-birthdays_dict = {(data_row["month"], data_row["day"])                  : data_row for (index, data_row) in data.iterrows()}
-if today_tuple in birthdays_dict:
-    birthday_person = birthdays_dict[today_tuple]
-    file_path = f"letter_templates/letter_{random.randint(1, 3)}.txt"
-    with open(file_path) as letter_file:
-        contents = letter_file.read()
-        contents = contents.replace("[NAME]", birthday_person["name"])
-
-    with smtplib.SMTP("YOUR EMAIL PROVIDER SMTP SERVER ADDRESS") as connection:
+if birthday_today:
+    with open(f"letter_templates/letter_{random.randint(1,3)}.txt") as data:
+        letter = data.read()
+        output_letter_rough =letter.replace(NAME_PLACEHOLDER,birthday_person_details["name"])
+        age = present_year - birthday_person_details["year"]
+        output_letter = output_letter_rough.replace(AGE_PLACEHOLDER,str(age))
+    with smtplib.SMTP("smtp.gmail.com") as connection:
         connection.starttls()
-        connection.login(MY_EMAIL, MY_PASSWORD)
+        connection.login(user=MY_EMAIL, password=MY_PASSWORD)
         connection.sendmail(
-            from_addr=MY_EMAIL,
-            to_addrs=birthday_person["email"],
-            msg=f"Subject:Happy Birthday!\n\n{contents}"
-        )
+                            from_addr=MY_EMAIL,
+                            to_addrs=birthday_person_details["email"],
+                            msg=f"Subject:Birthday Wishes!\n\n{output_letter}"
+                            )
