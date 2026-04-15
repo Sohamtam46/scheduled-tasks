@@ -28,6 +28,7 @@ for people_details in birthdays_dict:
     if people_details["month"] == present_month and people_details["day"] == present_day:
         birthday_person_details = people_details
         birthday_today = True
+        print("got a hit")
 
 MY_EMAIL = os.environ.get("MY_EMAIL")
 MY_PASSWORD = os.environ.get("MY_PASSWORD")
@@ -39,6 +40,7 @@ if birthday_today:
         age = present_year - birthday_person_details["year"]
         output_letter = output_letter_rough.replace(AGE_PLACEHOLDER,str(age))
     with smtplib.SMTP("smtp.gmail.com") as connection:
+        print("sending email....")
         connection.starttls()
         connection.login(user=MY_EMAIL, password=MY_PASSWORD)
         connection.sendmail(
