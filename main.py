@@ -15,6 +15,8 @@ birthday_today = False
 NAME_PLACEHOLDER = "[NAME]"
 AGE_PLACEHOLDER = "[AGE]"
 
+print("Starting program")
+
 # getting current day details
 now = dt.datetime.now()
 present_year = now.year
