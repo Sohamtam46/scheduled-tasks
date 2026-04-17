@@ -1,11 +1,11 @@
 import requests
 from twilio.rest import Client
 
-account_sid = "test"
-auth_token = "test"
+account_sid = os.environ.get("ACCOUNT_SID")
+auth_token = os.environ.get("AUTH_TOKEN")
 client = Client(account_sid, auth_token)
 
-OPEN_WEATHER_API_KEY = "test"
+OPEN_WEATHER_API_KEY = os.environ.get("OWM_API_KEY")
 MY_LAT = 53.285347
 MY_LONG = -9.012642
 parameters = {
